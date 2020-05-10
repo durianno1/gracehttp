@@ -28,6 +28,7 @@ const (
 	GRACEFUL_ENVIRON_KEY    = "IS_GRACEFUL"
 	GRACEFUL_ENVIRON_STRING = GRACEFUL_ENVIRON_KEY + "=1"
 	GRACEFUL_LISTENER_FD    = 3
+	OCSP_DEFAULT_EXPIRE     = time.Minute * 10
 )
 
 // HTTP server that supported graceful shutdown or restart
@@ -345,7 +346,7 @@ func (srv *Server) asyncOcspCache() {
 }
 
 func (srv *Server) scheduleOcsp() {
-	dur := time.Minute * 10
+	dur := OCSP_DEFAULT_EXPIRE
 	if srv.ocspExpire > 0 {
 		dur = srv.ocspExpire
 	}
