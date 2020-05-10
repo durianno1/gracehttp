@@ -28,7 +28,6 @@ const (
 	GRACEFUL_ENVIRON_KEY    = "IS_GRACEFUL"
 	GRACEFUL_ENVIRON_STRING = GRACEFUL_ENVIRON_KEY + "=1"
 	GRACEFUL_LISTENER_FD    = 3
-	OCSP_DURATION           = 10 // 10 minute
 )
 
 // HTTP server that supported graceful shutdown or restart
@@ -42,6 +41,7 @@ type Server struct {
 	shutdownChan chan bool
 	certFile     string
 	certKey      string
+	ocspExpire   time.Duration
 }
 
 func NewServer(addr string, handler http.Handler, readTimeout, writeTimeout time.Duration) *Server {
@@ -103,8 +103,11 @@ func (srv *Server) initConfig() *tls.Config {
 	return config
 }
 
-func (srv *Server) ListenAndServeTLSOcsp(certFile, keyFile string) error {
+func (srv *Server) ListenAndServeTLSOcsp(expire time.Duration, certFile, keyFile string) error {
 	srv.initServer(certFile, keyFile)
+	if expire > 0 {
+		srv.ocspExpire = expire
+	}
 
 	config := srv.initConfig()
 	configHasCert := len(config.Certificates) > 0 || config.GetCertificate != nil
@@ -337,12 +340,17 @@ func (srv *Server) requestOCSP() error {
 	return nil
 }
 
-func (srv *Server) asyncOcspCache()  {
+func (srv *Server) asyncOcspCache() {
 	go srv.scheduleOcsp()
 }
 
 func (srv *Server) scheduleOcsp() {
-	t := time.NewTicker(time.Minute * OCSP_DURATION)
+	dur := time.Minute * 10
+	if srv.ocspExpire > 0 {
+		dur = srv.ocspExpire
+	}
+
+	t := time.NewTicker(dur)
 	defer t.Stop()
 
 	for {
