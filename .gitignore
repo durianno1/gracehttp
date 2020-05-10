@@ -1,4 +1,6 @@
-
 gracehttpdemo/gracehttpdemo
 
 .reviewboardrc
+
+.idea
+.DS_Store
