@@ -351,6 +351,9 @@ func (srv *Server) scheduleOcsp() {
 		dur = srv.ocspExpire
 	}
 
+	// do at once right now
+	go srv.requestOCSP()
+
 	t := time.NewTicker(dur)
 	defer t.Stop()
 
