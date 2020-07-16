@@ -1,7 +1,6 @@
 package gracehttp
 
 import (
-	"fmt"
 	"net/http"
 	"time"
 )
@@ -35,16 +34,10 @@ func SetEnv(mode string) {
 
 // refer http.ListenAndServe
 func ListenAndServe(addr string, handler http.Handler) error {
-	if env == EnvDebug {
-		fmt.Printf("The Server Is Runing: http://%s \n", addr)
-	}
 	return NewServer(addr, handler, DEFAULT_READ_TIMEOUT, DEFAULT_WRITE_TIMEOUT).ListenAndServe()
 }
 
 // refer http.ListenAndServeTLS
 func ListenAndServeTLS(addr string, certFile string, keyFile string, handler http.Handler) error {
-	if env == EnvDebug {
-		fmt.Printf("The Server Is Runing: https://%s \n", addr)
-	}
 	return NewServer(addr, handler, DEFAULT_READ_TIMEOUT, DEFAULT_WRITE_TIMEOUT).ListenAndServeTLS(certFile, keyFile)
 }

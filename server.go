@@ -78,6 +78,11 @@ func (srv *Server) ListenAndServe() error {
 	}
 
 	srv.listener = ln
+
+	if env == EnvDebug {
+		fmt.Printf("The Server Is Runing: http://%s \n", srv.Addr)
+	}
+
 	return srv.Serve()
 }
 
@@ -105,10 +110,6 @@ func (srv *Server) initConfig() *tls.Config {
 }
 
 func (srv *Server) ListenAndServeTLSOcsp(expire time.Duration, certFile, keyFile string) error {
-	if env == EnvDebug {
-		fmt.Printf("The Server Is Runing: http://%s \n", srv.Addr)
-	}
-
 	srv.initServer(certFile, keyFile)
 	if expire > 0 {
 		srv.ocspExpire = expire
@@ -127,6 +128,11 @@ func (srv *Server) ListenAndServeTLSOcsp(expire time.Duration, certFile, keyFile
 	}
 
 	srv.listener = tls.NewListener(ln, config)
+
+	if env == EnvDebug {
+		fmt.Printf("The Server Is Runing: https://%s \n", srv.Addr)
+	}
+
 	return srv.Serve()
 }
 
@@ -146,10 +152,6 @@ func (srv *Server) GetCertificateWithOcsp(*tls.ClientHelloInfo) (*tls.Certificat
 }
 
 func (srv *Server) ListenAndServeTLS(certFile, keyFile string) error {
-	if env == EnvDebug {
-		fmt.Printf("The Server Is Runing: https://%s \n", srv.Addr)
-	}
-
 	srv.initServer(certFile, keyFile)
 	config := srv.initConfig()
 
@@ -170,6 +172,11 @@ func (srv *Server) ListenAndServeTLS(certFile, keyFile string) error {
 	}
 
 	srv.listener = tls.NewListener(ln, config)
+
+	if env == EnvDebug {
+		fmt.Printf("The Server Is Runing: https://%s \n", srv.Addr)
+	}
+
 	return srv.Serve()
 }
 
