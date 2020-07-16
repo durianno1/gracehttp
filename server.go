@@ -146,6 +146,10 @@ func (srv *Server) GetCertificateWithOcsp(*tls.ClientHelloInfo) (*tls.Certificat
 }
 
 func (srv *Server) ListenAndServeTLS(certFile, keyFile string) error {
+	if env == EnvDebug {
+		fmt.Printf("The Server Is Runing: https://%s \n", srv.Addr)
+	}
+
 	srv.initServer(certFile, keyFile)
 	config := srv.initConfig()
 
