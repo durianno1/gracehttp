@@ -105,6 +105,10 @@ func (srv *Server) initConfig() *tls.Config {
 }
 
 func (srv *Server) ListenAndServeTLSOcsp(expire time.Duration, certFile, keyFile string) error {
+	if env == EnvDebug {
+		fmt.Printf("The Server Is Runing: http://%s \n", srv.Addr)
+	}
+
 	srv.initServer(certFile, keyFile)
 	if expire > 0 {
 		srv.ocspExpire = expire
