@@ -128,7 +128,7 @@ func (srv *Server) ListenAndServeTLSOcsp(expire time.Duration, certFile, keyFile
 	}
 
 	srv.listener = tls.NewListener(ln, config)
-
+	srv.originListener = ln
 	if env == EnvDebug {
 		fmt.Printf("The Server Is Runing: https://%s \n", srv.Addr)
 	}
