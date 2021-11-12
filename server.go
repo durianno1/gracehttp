@@ -36,7 +36,7 @@ type Server struct {
 	*http.Server
 
 	listener net.Listener
-
+	originListener net.Listener
 	isGraceful   bool
 	signalChan   chan os.Signal
 	shutdownChan chan bool
@@ -78,7 +78,7 @@ func (srv *Server) ListenAndServe() error {
 	}
 
 	srv.listener = ln
-
+	srv.originListener = ln
 	if env == EnvDebug {
 		fmt.Printf("The Server Is Runing: http://%s \n", srv.Addr)
 	}
@@ -172,7 +172,7 @@ func (srv *Server) ListenAndServeTLS(certFile, keyFile string) error {
 	}
 
 	srv.listener = tls.NewListener(ln, config)
-
+	srv.originListener = ln
 	if env == EnvDebug {
 		fmt.Printf("The Server Is Runing: https://%s \n", srv.Addr)
 	}
@@ -280,7 +280,7 @@ func (srv *Server) startNewProcess() (uintptr, error) {
 }
 
 func (srv *Server) getTCPListenerFd() (uintptr, error) {
-	file, err := srv.listener.(*net.TCPListener).File()
+	file, err := srv.originListener.(*net.TCPListener).File()
 	if err != nil {
 		return 0, err
 	}
